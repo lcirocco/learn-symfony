@@ -1,0 +1,9 @@
+{# templates/default/new.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Form{% endblock %}
+{% block body %}
+    {{ form_start(form, {'action': id is defined ? path('products.update', {id: id}) : path('products.create') }) }}
+    {{ form_widget(form) }}
+    {{ form_end(form) }}
+{% endblock %}
