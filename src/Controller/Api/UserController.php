@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route("/api/user")
+ * @Route("/api/users")
  */
 class UserController extends AbstractController
 {
@@ -22,9 +22,9 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/", name="user.log_in", methods="POST")
+     * @Route("/authentication", name="user.log_in", methods="POST")
      */
-    public function logIn(Request $request): JsonResponse
+    public function authentication(Request $request): JsonResponse
     {
         $data = \json_decode($request->getContent(), true);
         $user = $this->userRepository->findOneBy(['username' => $data['username'], 'password' => $data['password']]);

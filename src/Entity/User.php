@@ -37,6 +37,8 @@ class User implements UserInterface, \JsonSerializable
      */
     private $username;
 
+    private $expireAt;
+
 
     public function getId(): ?int
     {
@@ -57,6 +59,22 @@ class User implements UserInterface, \JsonSerializable
     public function getUsername()
     {
         return $this->username;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExpireAt()
+    {
+        return $this->expireAt;
+    }
+
+    /**
+     * @param mixed $expireAt
+     */
+    public function setExpireAt($expireAt): void
+    {
+        $this->expireAt = $expireAt;
     }
 
     public function getRoles()
@@ -136,7 +154,8 @@ class User implements UserInterface, \JsonSerializable
         return[
             'name' => $this->name,
             'username' => $this->username,
-            'apiToken' => $this->apiToken
+            'apiToken' => $this->apiToken,
+            'roles' => $this->getRoles()
         ];
     }
 }

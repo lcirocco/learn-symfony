@@ -6,6 +6,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Service\ProductService;
 use App\Service\ProductValidator;
+use App\Service\UserService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,18 +22,21 @@ class ProductController extends AbstractController
     private $productService;
     private $categoriaRepository;
     private $productValidator;
+    private $userService;
 
     public function __construct(
         ProductRepository $productRepository,
         ProductService $productService,
         CategoryRepository $categoriaRepository,
-        ProductValidator $productValidator
+        ProductValidator $productValidator,
+        UserService $userService
     )
     {
         $this->productRepository = $productRepository;
         $this->productService = $productService;
         $this->categoriaRepository = $categoriaRepository;
         $this->productValidator = $productValidator;
+        $this->userService = $userService;
     }
 
     /**
@@ -62,6 +66,7 @@ class ProductController extends AbstractController
     {
         $data = \json_decode($request->getContent(), true);
         $category = $this->categoriaRepository->find($data['category']);
+
 
         if($category === null)
         {
