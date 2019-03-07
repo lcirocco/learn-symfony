@@ -17,15 +17,6 @@ class User implements UserInterface, \JsonSerializable
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
-
-    /**
-     * @ORM\Column(type="string", unique=true)
-     */
-    private $apiToken;
 
     /**
      * @ORM\Column(type="string")
@@ -37,49 +28,39 @@ class User implements UserInterface, \JsonSerializable
      */
     private $username;
 
-    private $expireAt;
-
+    /**
+     * @ORM\Column(name="roles", type="simple_array", length=255)
+     */
+    private $roles;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): self
-    {
-        $this->name = $name;
-
-        return $this;
-    }
     public function getUsername()
     {
         return $this->username;
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getExpireAt()
+    public function getRoles()
     {
-        return $this->expireAt;
+        return $this->roles;
     }
 
     /**
-     * @param mixed $expireAt
+     * @param array $roles
+     *
+     * @return $this
      */
-    public function setExpireAt($expireAt): void
+    public function setRoles($roles): self
     {
-        $this->expireAt = $expireAt;
-    }
+        $this->roles = $roles;
 
-    public function getRoles()
-    {
-        return array('ROLE_USER');
+        return $this;
     }
 
     /**
@@ -88,6 +69,17 @@ class User implements UserInterface, \JsonSerializable
     public function getPassword()
     {
         return $this->password;
+    }
+
+    /**
+     * @param mixed $password
+     * @return User
+     */
+    public function setPassword($password): self
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     /**
@@ -114,24 +106,6 @@ class User implements UserInterface, \JsonSerializable
     }
 
     /**
-     * @return string
-     */
-    public function getApiToken()
-    {
-        return $this->apiToken;
-    }
-
-    /**
-     * @param string $apiToken
-     * @return User
-     */
-    public function setApiToken($apiToken): self
-    {
-        $this->apiToken = $apiToken;
-        return $this;
-    }
-
-    /**
      * @param string $username
      * @return User
      */
@@ -152,9 +126,7 @@ class User implements UserInterface, \JsonSerializable
     public function jsonSerialize()
     {
         return[
-            'name' => $this->name,
             'username' => $this->username,
-            'apiToken' => $this->apiToken,
             'roles' => $this->getRoles()
         ];
     }

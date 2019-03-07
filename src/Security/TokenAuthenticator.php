@@ -4,9 +4,11 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Repository\UserTokenRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -16,10 +18,15 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class TokenAuthenticator extends AbstractGuardAuthenticator
 {
     private $userRepository;
+    private $tokenRepository;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(
+        UserRepository $userRepository,
+        UserTokenRepository $tokenRepository
+    )
     {
         $this->userRepository = $userRepository;
+        $this->tokenRepository = $tokenRepository;
     }
 
     /**
@@ -50,7 +57,15 @@ class TokenAuthenticator extends AbstractGuardAuthenticator
         }
 
         // if a User object, checkCredentials() is called
-        return $this->userRepository->findOneBy(['apiToken' => $credentials['token']]);
+        //return $this->userRepository->findOneBy(['apiToken' => $credentials['token']]);
+
+        $token = $this->tokenRepository->findOneBy(['token' => $credentials['token']]);
+
+        if ($token !== null && $token->getRefreshedAt() === null && time() <= $token->getExpiresAt()) {
+            return $token->getUser();
+        }
+
+        throw new CustomUserMessageAuthenticationException('Invalid token');
     }
 
     public function checkCredentials($credentials, UserInterface $user)

@@ -4,10 +4,14 @@ namespace App\Controller\Api;
 
 
 use App\Repository\UserRepository;
+use App\Service\UserService;
+use App\Service\UserTokenService;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 /**
  * @Route("/api/users")
@@ -15,10 +19,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class UserController extends AbstractController
 {
     private $userRepository;
+    private $userService;
+    private $userTokenService;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(
+        UserRepository $userRepository,
+        UserService $userService,
+        UserTokenService $userTokenService
+    )
     {
         $this->userRepository = $userRepository;
+        $this->userService = $userService;
+        $this->userTokenService = $userTokenService;
     }
 
     /**
@@ -27,14 +39,38 @@ class UserController extends AbstractController
     public function authentication(Request $request): JsonResponse
     {
         $data = \json_decode($request->getContent(), true);
-        $user = $this->userRepository->findOneBy(['username' => $data['username'], 'password' => $data['password']]);
-
-        if($user === null)
-        {
-            return $this->json(['message' => 'Incorrect username or password'], 404);
+        $username = $data['username'];
+        $password = $data['password'];
+        try {
+            $token = $this->userService->createToken($username, $password);
+            return $this->json($token);
+        } catch(EntityNotFoundException $e) {
+            return $this->json(['message' => $e->getMessage()], 404);
         }
+        catch(AuthenticationException $e) {
+            return $this->json(['message' => $e->getMessage()], 401);
+        }
+    }
 
+    /**
+     * @Route("/", name="create_user", methods="POST")
+     */
+    public function createUser(Request $request): JsonResponse
+    {
+        $data = \json_decode($request->getContent(), true);
 
-        return $this->json($user,200);
+        $this->userService->createUserByUsernameAndPassword($data['username'], $data['password']);
+
+        return $this->json(null, 201);
+    }
+
+    /**
+     * @Route("/refresh-token", name="refresh_token", methods="POST")
+     */
+    public function refreshToken(Request $request)
+    {
+        $data = \json_decode($request->getContent(), true);
+
+        $this->userTokenService->userRefreshToken($data);
     }
 }

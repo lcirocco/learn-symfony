@@ -6,7 +6,7 @@ use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
 use App\Service\ProductService;
 use App\Service\ProductValidator;
-use App\Service\UserService;
+use App\Service\UserTokenService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +29,7 @@ class ProductController extends AbstractController
         ProductService $productService,
         CategoryRepository $categoriaRepository,
         ProductValidator $productValidator,
-        UserService $userService
+        UserTokenService $userService
     )
     {
         $this->productRepository = $productRepository;

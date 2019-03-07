@@ -1,5 +1,8 @@
 security:
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    encoders:
+        App\Entity\User:
+            algorithm: bcrypt
     providers:
         in_memory: { memory: ~ }
 
@@ -18,6 +21,8 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/users/authentication, methods: POST, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/users/refresh-token,  methods: POST, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/users,                methods: POST, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         # - { path: ^/api/categories, methods: POST, roles: [ROLE_MANAGER, ROLE_ADMIN] }
         - { path: ^/api/, roles: ROLE_USER }
 
