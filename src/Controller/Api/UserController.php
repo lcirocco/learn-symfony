@@ -65,12 +65,14 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/refresh-token", name="refresh_token", methods="POST")
+     * @Route("/refresh_token", name="refresh_token", methods="POST")
      */
     public function refreshToken(Request $request)
     {
         $data = \json_decode($request->getContent(), true);
 
-        $this->userTokenService->userRefreshToken($data);
+        $token = $this->userTokenService->userRefreshToken($data);
+
+        return $this->json($token, 400);
     }
 }

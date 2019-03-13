@@ -10,6 +10,7 @@ namespace App\Service;
 
 use App\Entity\User;
 use App\Entity\UserToken;
+use App\Repository\UserRepository;
 use App\Repository\UserTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -17,14 +18,17 @@ class UserTokenService
 {
     private $entityManager;
     private $userTokenRepository;
+    private $userRepository;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        UserTokenRepository $userTokenRepository
+        UserTokenRepository $userTokenRepository,
+        UserRepository $userRepository
     )
     {
         $this->entityManager = $entityManager;
         $this->userTokenRepository = $userTokenRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function createToken(User $user)
@@ -53,14 +57,18 @@ class UserTokenService
         return null;
     }
 
-    public function userRefreshToken(array $data)
+    public function userRefreshToken(array $data): UserToken
     {
-        $user = $this->userRepository->findOneBy(['apiToken' => $data['user']]);
+        $user = $this->userRepository->findOneBy(['username' => $data['user']]);
+        $token = $this->userTokenRepository->findOneBy(['token' => $data['token']]);
 
-        $this->entityManager->flush();
+        if($token !== null && $token->getRefreshedAt() === null)
+        {
+            $token->setRefreshedAt(new \DateTime());
+            $token = $this->createToken($user);
+        }
 
-        
-
+        return $token;
     }
 
     public function checkExpiration(string $oldToken)

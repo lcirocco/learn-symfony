@@ -2,7 +2,6 @@
 
 namespace App\Security;
 
-use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Repository\UserTokenRepository;
 use Symfony\Component\HttpFoundation\Request;
