@@ -38,7 +38,7 @@ class UserTokenService
             ->setToken($this->generateStringToken())
             ->setRefreshToken($this->generateStringToken())
             ->setCreatedAt(new \DateTime())
-            ->setExpiresAt(strtotime("+3 minutes"));
+            ->setExpiresAt(strtotime("+60 minutes"));
 
         $this->entityManager->persist($token);
 
@@ -50,7 +50,7 @@ class UserTokenService
     public function getValidToken(User $user): ?UserToken
     {
         $token = $this->userTokenRepository->findOneBy(['user' => $user->getId()], ['createdAt' => 'DESC']);
-        if ($token !== null && $token->getRefreshedAt() === null && $token->getExpiresAt() < time()) {
+        if ($token !== null && $token->getRefreshedAt() === null && $token->getExpiresAt() > time()) {
             return $token;
         }
 

@@ -60,7 +60,7 @@ class UserService
             throw new AuthenticationException('Invalid password');
         }
 
-        $token = $this->userTokenService->getValidToken($user);
+        $token = $this->userTokenService->getValidToken($user   );
 
         return $token === null
             ? $this->userTokenService->createToken($user)

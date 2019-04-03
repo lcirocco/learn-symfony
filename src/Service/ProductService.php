@@ -52,11 +52,11 @@ class ProductService
         $this->entityManager->flush();
     }
 
-    public function updateFromArray($array, $product)
+    public function updateFromArray($array, $product, $category)
     {
         $product->setName($array['name'])
             ->setPrice($array['price'])
-            ->setCategory($this->entityManager->$array['category'])
+            ->setCategory($category)
             ->setDescription($array['description']);
 
         $this->entityManager->flush();

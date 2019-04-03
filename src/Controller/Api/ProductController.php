@@ -87,7 +87,7 @@ class ProductController extends AbstractController
      *
      * @return JsonResponse
      */
-    public function badRequestResponse(array $message): JsonResponse
+    private function badRequestResponse(array $message): JsonResponse
     {
         return new JsonResponse(
             $message,
@@ -103,7 +103,14 @@ class ProductController extends AbstractController
     {
         $product = $this->productRepository->find($id);
         $data = json_decode($request->getContent(), true);
-        $this->productService->updateFromArray($data, $product);
+
+        $category = $this->categoriaRepository->find($data['category']);
+
+        if($category === null)
+        {
+            throw $this->createNotFoundException("Category Id not found");
+        }
+        $this->productService->updateFromArray($data, $product, $category);
 
         return $this->json($product,200);
     }
